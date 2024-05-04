@@ -73,6 +73,15 @@ exec-timeout 5 0
 end
 ```
 
+## ACL config
+```
+! allow only https and http to a segment (eg. to server)
+! on the router next to server
+access-list 101 permit tcp any host 172.16.102.102 eq 80
+access-list 101 permit tcp any host 172.16.102.102 eq 443
+access-list 101 deny ip any any
+```
+
 ## Saving configuration
 ```
 copy running-config startup-config
