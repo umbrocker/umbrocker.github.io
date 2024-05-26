@@ -3,7 +3,10 @@
 
 - biztonságos és megbízható végpontok közötti adatátvitel
 
-## az SSL 2 szintű protokoll:
+## SSL is two-layers of protocols:
+![SSL](./image04.png)<br>
+
+### Two SSL concepts
 - SSL session:
     - kliens-szerver közötti kapcsolat;
     - a Handshake protokoll által létrehozott kriptográfiai paraméterek készletét határozza meg;
@@ -88,9 +91,37 @@
 ![AH protocol](./image01.png)<br>
 ![AH packet](./image02.png)<br>
 
-- Next header: This field involves information about the header following the AH header. 
-- Security Parameter Index (SPI): It is an identifier that indicates to the receiver how to interprete the packet, what algorithms and keys should be used. AH assumes that the peers already negotiated all the parameters before with the help of ISAKMP/IKE protocol.
-- MAC: Calculated hash value for the whole packet.
+- **Next header**: This field involves information about the header following the AH header. 
+- **Security Parameter Index (SPI)**: It is an identifier that indicates to the receiver how to interprete the packet, what algorithms and keys should be used. AH assumes that the peers already negotiated all the parameters before with the help of ISAKMP/IKE protocol.
+- **MAC**: Calculated hash value for the whole packet.
+
+---
+# IPSec
+## Encapsulating Security Payload (ESP)
+- ESP provides the following:
+    - Encryption
+    - Authentication - only for ESP data + payload
+    - Integrity – only for ESP data + payload
+    - Anti-replay
+
+![ESP packet](./image03.png)<br>
+
+- **SPI identifier** indicates to the receiver how to interprete the packet, what algorithms and keys should be used. ESP assumes that the peers already negotiated all the parameters before with the help of ISAKMP/IKE protocol.
+- **Seuence number** – for anti-replay
+- **MAC** - optional
+
+
+## Security Associations – SA 
+- An SA is a basic building block of IPsec.
+- Security associations are maintained within a SA database (SADB), which is established by each device.
+- A VPN has SA entries defining the IPsec encryption parameters as well as SA entries defining the key exchange parameters.
+- **SA**: is a single connection, for duplex connection tw Sas are needed.
+- SA defines the operating modes, algorithms and keys
+
+## Phases of the key exchange (IKE)
+1. Agreement of basic policy
+2. Public key exchange
+3. Authentication
 
 ---
 
@@ -142,6 +173,62 @@
 - With DPI custom rules can be defined by the company, it can be set which applications workers can interact with.
 - DPI gives the visibility to administrators over the entire network.
 - It can be used to inspect data outbound, to prevent data exfiltration
+
+## Next gen firewalls
+- Designed to address advanced security threats at the application level through intelligent, context-aware security features
+- Filter packets based on applications and to inspect data contained in packets
+- Operates up to 7th layer
+- They combine the following feature
+    - Application awareness - Granular identification, visibility, and control of behaviors within applications – control, block risky application
+    - deep packet inspection, anti malware protection
+    - Integrated intrusion prevention
+    - High performance to monitor traffic without slowdown
+    - Threat intelligent sources
+
+## Context-Based Access Control (CBAC)
+- stateful packet filtering - filters not only at layer 3 and 4 but also in layer 5
+- traffic inspection– SYN flood attacks, TCP sequence numbers
+- Intrusion detection - analyzing syslog messages, SYN flood attacks, to prevent DoS attacks it can monitor three different values:
+    - The number of half-opened TCP connections
+    - The number of half-opened TCP connections during an interval
+    - The number of half-opened TCP connections initiated from a host
+- audits and alerts
+- CBAC only filters those traffic that is configured by the administrator
+- Monitors TCP connection setup
+- Tracks TCP sequence numbers
+- Monitors UDP session information
+- Inspects DNS queries and replies
+- Inspects common ICMP message types
+- Supports applications that rely on multiple connections
+- Inspects Application Layer information
+- Stores information about TCP, UDP and ICMP connections in the state table
+- Based on the State table it creates a dynamic entry in the ACL for filtering incoming traffic– till - IOS 12.3(4)
+- CBAC creates temporary openings to the established sessions, connections, that are going to permit the otherwise blocked traffic. 
+- The state table automatocally updated based on traffic flow.
+
+## Zone-Based Policy Firewalls
+- With ZPF, the interfaces are assigned to zones and then an inspection policy is applied to traffic moving between the zones.
+- The default policy is to block all traffic, unless explicitly allowed (CBACs default was allow all).
+- It supports previous firewall features, including Stateful Packet Inspection (SPI), application inspection, URL filtering, and DoS mitigation.
+- Easy to use, well structured
+- Not dependent on ACLs
+- The router security posture is to block unless explicitly allowed.
+- Policies are easy to read and troubleshoot with C3PL.
+- One policy affects any given traffic, instead of needing multiple ACLs and inspection actions.
+- More than one interface can be in one zone, but one interface can only be assigned to one zone. A new interface added to the zone inherits the characteristics of the zone. 
+
+### Configuring ZPF
+1. Create the zones for the firewall.
+`zone security`
+2. Define traffic classes.
+`class-map type inspect`
+3. Specify firewall policies.
+`policy-map type inspect`
+4. Apply firewall policies to pairs of source destination zones.
+`zone-pair`
+5. Assign router interfaces to zones.
+`zone-member security`
+
 
 
 
