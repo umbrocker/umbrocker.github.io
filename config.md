@@ -24,11 +24,25 @@ exit
 
 ## OSPF configuration
 ```
-router ospf 101
+router ospf 1
+router-id 192.168.1.5
 network 192.168.1.0 0.0.0.255 area 0
 network 10.1.1.0 0.0.0.3 area 0
 exit
 ```
+## If need default route (on the router)
+```
+router ospf 101
+default-information originate
+exit
+! you need static route on perimeter router
+ip route 0.0.0.0 0.0.0.0 101.101.101.10
+! on the ISP's router you also need static route
+ip route 0.0.0.0 0.0.0.0 101.101.101.9
+exit
+```
+
+
 
 ## Security configuration
 ```
@@ -57,6 +71,15 @@ login local
 transport input ssh
 exec-timeout 5 0
 end
+```
+
+## ACL config
+```
+! allow only https and http to a segment (eg. to server)
+! on the router next to server
+access-list 101 permit tcp any host 172.16.102.102 eq 80
+access-list 101 permit tcp any host 172.16.102.102 eq 443
+access-list 101 deny ip any any
 ```
 
 ## Saving configuration
