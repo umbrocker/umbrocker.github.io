@@ -32,6 +32,9 @@
 - conventional encryption keys
 - initialization vector (if CBC mode is used)
 
+---
+
+# Protocols used by SSL
 ## SSL Record Protocol
 - uses connection parameters
 - provides confidentiality and integrity
@@ -40,4 +43,37 @@
 - confidentiality: AES, IDEA, DES, 3DES, RC4, etc.
 - message integrity (using HMAC with shared secret key)
 
+## Change Cipher Spec Protocol
+- very simple protocol
+- the new state established by the handshake protocol is a pending state
+- change cipher spec protocol (actually a single command exchanged between client and server) makes this pending state the current one
+- will see its use in the handshake protocol
 
+## Alert Protocol
+- conveys SSL-alerts to peer entity (SSL-értesítéseket továbbít a másik egységnek)
+- secured using the record protocol (if any)
+- each message is two bytes
+    - one byte for level (severity)
+    - one byte for the alert code
+
+## Handshake Protocol
+- The most complex part of SSL
+- Allows server and client:
+    – to authenticate each other
+    – to negotiate encryption and MAC algorithms
+    – to create cryptographic keys to be used
+    – in general, to establish a session and then a connection
+- handshake is done before any data is transmitted
+- a series of messages in 4 phases
+    1. Establish Security Capabilities
+    2. Server Authentication and Key Exchange
+    3. Client Authentication and Key Exchange
+    4. Finish
+
+## Master Secret Creation
+- 48-byte value generated for a session
+- two stage creation
+    - pre-master secret is exchanged during handshake
+        - if RSA, client creates, encrypts and sends; server decrypts
+        - if DH, both calculates the same secret which is the premaster secret
+    - master secret is calculated using pre-master secret and random nonces exchanged during handshake
