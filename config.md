@@ -42,11 +42,21 @@ ip route 0.0.0.0 0.0.0.0 101.101.101.9
 exit
 ```
 
-
-
 ## Security configuration
 ```
+!!! syntax !!!
+
+! enable algorithm-type {md5 | scrypt | sha256} secret [password]
+! username [username] algorithm-type {md5 | scrypt | sha256} secret [password]
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 security passwords min-length 10
+service password-encryption
+line vty 0 4
+exec-timeout 3 30
+line console 0
+exec-timeout 3 30
+transport input ssh
 enable secret cisco12345
 !ios 15.3-tól:
 !enable algorithm-type scrypt secret cisco12345
@@ -59,18 +69,29 @@ login local
 exec-timeout 5 0
 logging synchronous
 exit
+line aux 0
+login local
+exit
 
-!
+
+! ssh config
 
 ip domain-name ccnasecurity.com
 !crypto key generate rsa modulus 1024
 crypto key generate rsa general-keys modulus 1024
 ip ssh version 2
+username Bob algorithm-type scrypt secret cisco12345
 line vty 0 4
 login local
 transport input ssh
-exec-timeout 5 0
+! exec-timeout 5 0
 end
+
+! show ip ssh
+! ip ssh time-out 60
+! ip ssh authentication-retries 2
+! exit
+
 ```
 
 ## ACL config
@@ -80,6 +101,16 @@ end
 access-list 101 permit tcp any host 172.16.102.102 eq 80
 access-list 101 permit tcp any host 172.16.102.102 eq 443
 access-list 101 deny ip any any
+```
+
+## Securing config files
+```
+conf t
+secure boot-image
+secure boot-config
+exit
+show secure bootset
+
 ```
 
 ## Saving configuration
